@@ -1,10 +1,15 @@
 // je vais chercher le driver sqlite3 dans node_modules
-const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const sqlite3 = require('sqlite3').verbose();
+const express = require('express');
+const cors = require('cors');
 
 const dbFile = 'test.db';
 const db = new sqlite3.Database(dbFile);
- 
+
+const app = express();
+app.use(cors());
+
 // sans db.serialize.
 // les operations sont lancées en même temps.
 // le INSERT risque d'etre executé.
@@ -24,7 +29,18 @@ db.serialize( () => {
 
 
 });
-  
+
+app.get('/', function (request, response) {
+  db.all('SELECT * FROM products', function (error, data) {
+    response.send(data);
+  });
+});
+
+app.listen(3000, function (error) {
+  if (!error) console.log('app listening port 3000');
+});
+
+
 
 
 
