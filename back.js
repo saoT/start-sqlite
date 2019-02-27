@@ -17,7 +17,9 @@ app.use(cors());
 db.serialize( () => {
 
   if ( !fs.existsSync(dbFile) ) {
-    db.run('CREATE TABLE products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)'); 
+    db.run('CREATE TABLE products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)');
+    db.run('CREATE TABLE students (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)');
+    db.run('CREATE TABLE animals (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT UNIQUE, student_id INTEGER, FOREIGN KEY(student_id) REFERENCES students(id) )');
   }
 
   db.run('INSERT INTO products (name) VALUES (?)', 'sac');
