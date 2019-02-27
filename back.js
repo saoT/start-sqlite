@@ -16,18 +16,50 @@ app.use(cors());
 // avant que la creation de la table soit finie.
 db.serialize( () => {
 
-  if ( !fs.existsSync(dbFile) ) {
-    db.run('CREATE TABLE products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)');
-    db.run('CREATE TABLE students (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)');
-    db.run('CREATE TABLE animals (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT UNIQUE, student_id INTEGER, FOREIGN KEY(student_id) REFERENCES students(id) )');
-  }
+  db.run('CREATE TABLE IF NOT EXISTS students (student_id INTEGER PRIMARY KEY AUTOINCREMENT, student_name TEXT)');
 
-  db.run('INSERT INTO products (name) VALUES (?)', 'sac');
+  db.run('INSERT INTO students (student_name) VALUES (?)', 'Harry');
+  // POUR CREER UNE FOREIGN KEY
+  // 1 - Créer une colonne pour la réceptionner -> student_id INTEGER,
+  // 2 - Définir cette colonne comme Foreign Key -> FOREIGN KEY(student_id)
+  // 3 - Indiquer à quelle table et quelle colonne fait référence cette Foreign Key
+  // -> REFERENCES students(id)
 
-  db.all('SELECT name FROM products', function (error, data) {
+
+
+
+  db.run('CREATE TABLE IF NOT EXISTS animals (animal_id INTEGER PRIMARY KEY AUTOINCREMENT, animal_name TEXT UNIQUE, type TEXT UNIQUE, student_id INTEGER, FOREIGN KEY(student_id) REFERENCES students(id) )');
+
+  db.run('INSERT INTO animals (animal_name, type, student_id) VALUES (?, ?, ?)', 'Hedwige', 'chouette', 1);
+
+
+
+  // db.all('SELECT * FROM animals NATURAL JOIN students', function (error, data) {
+  //   if (!error) console.log(data);
+  //   else console.log(error);
+  // });
+
+  db.run('CREATE TABLE IF NOT EXISTS teachers (teacher_id INTEGER PRIMARY KEY AUTOINCREMENT, teacher_name TEXT)');
+
+  db.run('INSERT INTO teachers (teacher_name) VALUES (?)', 'Dumbledore');
+
+  db.run('CREATE TABLE IF NOT EXISTS students_to_teachers (students_to_teachers_id INTEGER PRIMARY KEY AUTOINCREMENT, teacher_id INTEGER, student_id INTEGER, FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id), FOREIGN KEY (student_id) REFERENCES students(student_id))');
+
+  db.run('INSERT INTO students_to_teachers (teacher_id, student_id) VALUES (?,?)', 1, 1);
+
+
+  db.all('SELECT * FROM teachers NATURAL JOIN students_to_teachers NATURAL JOIN students NATURAL JOIN animals', function (error, data) {
     if (!error) console.log(data);
     else console.log(error);
   });
+
+
+
+
+
+
+
+
 
 
 });
@@ -42,6 +74,9 @@ app.listen(3000, function (error) {
   if (!error) console.log('app listening port 3000');
 });
 
+
+product.tshirt_name
+product[category + '_name']
 
 
 
